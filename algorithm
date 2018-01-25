@@ -1,0 +1,15 @@
+first_year=first year of the data
+fix the hypothetical current year=curr_yr
+get all examples up to curr_yr(included)=pre_train_set
+get feature space from pre_train_set
+vectorize the pre_train_set in feature space
+weight=1
+for each year since curr_year until the first_year
+	train_set+=weight samples in pre_train_set which belong to year (sample * weight)
+	weight*=2/3
+train multi-label classifier=predictor
+get all posterior examples to curr_yr=test_set
+vectorize the test_set in feature space
+test predictor with test_set
+evaluate
+register the results
