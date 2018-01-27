@@ -13,7 +13,6 @@ import numpy as np
 from datetime import datetime
 import cPickle
 import plotOverTime as plOT
-from scipy import sparse
 
 parser = argparse.ArgumentParser(description='process to evaluate the fall in performance in category prediction over time')
 parser.add_argument('blog', metavar='blog', type=str, help='location of the blog')
@@ -91,11 +90,9 @@ for curr_year in range(first_year,last_year):
         weight*=2/3
 #train multi-label classifier=predictor
     predictor=ct.trainPredictor(tiMat,labels_trn)
-    tiMat_lil=sparse.lil_matrix(tiMat)
-    for i in range(0,tiMat_lil.get_shape()[0]):
-        tiMat_lil[i]*= wa[i]
-        #tiMat.data[tiMat.indptr[i] : tiMat.indptr[i + 1]] *= wa[i]
-    tiMat=sparse.csc_matrix(tiMat_lil)
+    for i in range(0,tiMat.get_shape()[0]):
+        #tiMat[i]*= wa[i]
+        tiMat.data[tiMat.indptr[i] : tiMat.indptr[i + 1]] *= wa[i]
     predictorWa=ct.trainPredictor(tiMat,labels_trn)
     if v:
         print "size of weights array:"+str(len(wa))
@@ -121,12 +118,6 @@ for curr_year in range(first_year,last_year):
     #evaluate
         acc_score,prec_score,rec_score,f1_score=ct.evaluateMultilabelPrediction(true_labels_tst,lbls_predicted)
         acc_scoreWa,prec_scoreWa,rec_scoreWa,f1_scoreWa=ct.evaluateMultilabelPrediction(true_labels_tst,lbls_predictedWa)
-
-        output = open(args.output+"/"+blog+'_'+str(curr_year)+'_'+str(year_tst)+'_predictions.pkl', 'wb')
-        print list(handLbl.classes_)        
-        cPickle.dump([true_labels_tst,lbls_predicted], output)
-        output.close()
-        
         if v:
             print "scores[accuracy,precision,recall,f1-measure]:"
             print "s--"+str(acc_score)+","+str(prec_score)+","+str(rec_score)+","+str(f1_score)

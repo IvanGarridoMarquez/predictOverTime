@@ -1,17 +1,17 @@
 #!/bin/bash
 
-params="$params"
+params="-v -t"
 
-#python predictionOverTime.py coupleofpixels ../results/ $params > ../log/coupleofpixels_predTime.log.txt
-#echo "coupleofpixels"
-#python predictionOverTime.py domadoo ../results/ $params > ../log/domadoo_predTime.log.txt
-#echo "domadoo"
-#python predictionOverTime.py domotique34 ../results/ $params > ../log/domotique34_predTime.log.txt
-#echo "domotique34"
-#python predictionOverTime.py johncouscous ../results/ $params > ../log/johncouscous_predTime.log.txt
-#echo "johncouscous"
-#python predictionOverTime.py josdblog ../results/ $params > ../log/josdblog_predTime.log.txt
-#echo "josdblog"
+python predictionOverTime.py coupleofpixels ../results/ $params > ../log/coupleofpixels_predTime.log.txt
+echo "coupleofpixels"
+python predictionOverTime.py domadoo ../results/ $params > ../log/domadoo_predTime.log.txt
+echo "domadoo"
+python predictionOverTime.py domotique34 ../results/ $params > ../log/domotique34_predTime.log.txt
+echo "domotique34"
+python predictionOverTime.py johncouscous ../results/ $params > ../log/johncouscous_predTime.log.txt
+echo "johncouscous"
+python predictionOverTime.py josdblog ../results/ $params > ../log/josdblog_predTime.log.txt
+echo "josdblog"
 python predictionOverTime.py julsa ../results/ $params > ../log/julsa_predTime.log.txt
 echo "julsa"
 python predictionOverTime.py jurilexblog ../results/ $params > ../log/jurilexblog_predTime.log.txt
