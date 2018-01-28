@@ -34,6 +34,15 @@ def loadStopwords(listfile):
         #print word
     return stopwordlst
     
+def getWeighBagOfWords(stpwrds,dataSet,w):
+    vectorizer = CountVectorizer(ngram_range=(1,2),lowercase=True,stop_words=stpwrds)
+    countMatrix=vectorizer.fit_transform(dataSet.getInstancesTexts())
+    #i=0
+    for i in range(0,len(countMatrix)):
+        countMatrix[i]*=w[i]
+    transformer = TfidfTransformer()
+    tfidf_train = transformer.fit_transform(countMatrix)
+    return vectorizer,transformer,tfidf_train,countMatrix
 
 def getBagOfWords(stpwrds,dataSet):
     vectorizer = CountVectorizer(ngram_range=(1,2),lowercase=True,stop_words=stpwrds)

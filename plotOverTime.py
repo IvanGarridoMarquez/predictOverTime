@@ -40,11 +40,13 @@ def plotBehaviorN(labelX,dataY,labelCurves,axes=["x label","y label","title"],sa
     indStyle=0
     indColor=0
     indLabel=0
+    #fig = plt.figure()
+    ax = plt.subplot(111)
     style=['s','^','o','*','+']
     color=['b', 'r', 'g', 'c', 'm', 'y', 'k', 'w']
     for curve in dataY:
-        plt.plot(labelX, curve,'k',label="")
-        plt.plot(labelX, curve,color[indColor]+style[indStyle],label=labelCurves[indLabel])
+        ax.plot(labelX, curve,'k',label="")
+        ax.plot(labelX, curve,color[indColor]+style[indStyle],label=labelCurves[indLabel])
         indStyle+=1
         indColor+=1
         indLabel+=1
@@ -54,10 +56,12 @@ def plotBehaviorN(labelX,dataY,labelCurves,axes=["x label","y label","title"],sa
             indColor=0
     plt.xticks(labelX, labelX)    
     #plt.axis([min(labelX)-1, max(labelX)+1, 0, 1])
+    box = ax.get_position()
+    ax.set_position([box.x0, box.y0, box.width * 0.9, box.height])
     plt.xlabel(axes[0])
     plt.ylabel(axes[1])
     plt.title(axes[2])
-    plt.legend()
+    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
     if(save!="show"):
         plt.savefig(save)
     else:
