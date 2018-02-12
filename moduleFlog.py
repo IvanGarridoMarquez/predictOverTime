@@ -58,6 +58,13 @@ def mapBlogs(blog):
         return "jeuxvideo6"
     return blog    
 
+def yearArray(minCP):
+    yArr=[]
+    for dc in minCP.getInstancesDates():
+        yArr.append([float(dc[0][:4])])
+    return yArr
+
+
 class Post:
     date=""
     author=""
@@ -143,7 +150,12 @@ class microCorpus:
                     catg.append(z)
             inst.append(set(catg))
         return inst
-
+    
+    def getInstancesDates(self):
+        inst=[]
+        for x in self.mcCorpus:
+            inst.append(x.date)
+        return inst
 
 class Blog:
     "Blog handling class"
@@ -264,7 +276,7 @@ class Blog:
             sep="/"
         cnx=mysql.connector.connect(user=self.db_user,password=self.db_password,host=self.db_host,database=self.db_database)
         self.dbCon=cnx.cursor()
-        self.dbCon.execute("select post.file, post.idBlogEntry from post where post.blog="+str(self.idC)+" and post.date>='"+str(datea)+"' and post.date<='"+str(dateb)+"';")
+        self.dbCon.execute("select post.file, post.idBlogEntry from post where post.blog="+str(self.idC)+" and post.date>='"+str(datea)+"' and post.date<='"+str(dateb)+"' order by date;")
         for fl in self.dbCon:
             catDoc.append([self.loc+sep+fl[0],fl[1]])
         self.dbCon.close()

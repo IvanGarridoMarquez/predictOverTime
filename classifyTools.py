@@ -9,6 +9,7 @@ from lxml import etree
 import os
 import argparse
 import moduleFlog as flog
+from scipy import sparse
 from sklearn import svm
 from sklearn.naive_bayes import MultinomialNB
 from sklearn import metrics
@@ -34,15 +35,51 @@ def loadStopwords(listfile):
         #print word
     return stopwordlst
     
+def getWeighBagOfWordsYr(stpwrds,dataSet,w,yra):
+    vectorizer = CountVectorizer(ngram_range=(1,2),lowercase=True,stop_words=stpwrds)
+    countMatrix=vectorizer.fit_transform(dataSet.getInstancesTexts())
+    #print len(yra)
+    #print yra
+    yranp=np.array(yra)
+    yrasc=sparse.csr_matrix(yranp)
+    print yrasc.shape
+    #i=0
+    #print type(countMatrix)
+    transformer = TfidfTransformer()
+    tfidf_train = transformer.fit_transform(countMatrix)
+    tfidf_trainWA=tfidf_train.copy()
+    #print type(tfidf_train)
+    print tfidf_train.shape
+    for i in range(0,tfidf_train.shape[0]):
+        #tiMat.data[tiMat.indptr[i] : tiMat.indptr[i + 1]] *= wa[i]
+        #print w[i]
+        #print tfidf_trainWA.data[tfidf_trainWA.indptr[i]:tfidf_trainWA.indptr[i+1]]
+        #print "$$$$"
+        #print tfidf_trainWA.data[tfidf_trainWA.indptr[i]:tfidf_trainWA.indptr[i+1]]*w[i]
+        tfidf_trainWA.data[tfidf_trainWA.indptr[i]:tfidf_trainWA.indptr[i+1]]*=w[i]
+    tfidf_train=sparse.hstack(tfidf_train,yrasc)
+    tfidf_trainWA=sparse.hstack([tfidf_trainWA,yrasc])
+    return vectorizer,transformer,tfidf_train,countMatrix,tfidf_trainWA    
+
+    
 def getWeighBagOfWords(stpwrds,dataSet,w):
     vectorizer = CountVectorizer(ngram_range=(1,2),lowercase=True,stop_words=stpwrds)
     countMatrix=vectorizer.fit_transform(dataSet.getInstancesTexts())
     #i=0
-    for i in range(0,len(countMatrix)):
-        countMatrix[i]*=w[i]
+    #print type(countMatrix)
     transformer = TfidfTransformer()
     tfidf_train = transformer.fit_transform(countMatrix)
-    return vectorizer,transformer,tfidf_train,countMatrix
+    tfidf_trainWA=tfidf_train.copy()
+    #print type(tfidf_train)
+    #print tfidf_train.shape[0]
+    for i in range(0,tfidf_train.shape[0]):
+        #tiMat.data[tiMat.indptr[i] : tiMat.indptr[i + 1]] *= wa[i]
+        #print w[i]
+        #print tfidf_trainWA.data[tfidf_trainWA.indptr[i]:tfidf_trainWA.indptr[i+1]]
+        #print "$$$$"
+        #print tfidf_trainWA.data[tfidf_trainWA.indptr[i]:tfidf_trainWA.indptr[i+1]]*w[i]
+        tfidf_trainWA.data[tfidf_trainWA.indptr[i]:tfidf_trainWA.indptr[i+1]]*=w[i]
+    return vectorizer,transformer,tfidf_train,countMatrix,tfidf_trainWA
 
 def getBagOfWords(stpwrds,dataSet):
     vectorizer = CountVectorizer(ngram_range=(1,2),lowercase=True,stop_words=stpwrds)
@@ -54,6 +91,14 @@ def getBagOfWords(stpwrds,dataSet):
 def transformToFeat(vc,tr,data):
     countMatrix = vc.transform(data.getInstancesTexts())
     tfidf=tr.transform(countMatrix)
+    return tfidf,countMatrix
+    
+def transformToFeatYr(vc,tr,data,yra):
+    countMatrix = vc.transform(data.getInstancesTexts())
+    tfidf=tr.transform(countMatrix)
+    yranp=np.array(yra)
+    yrasc=sparse.csr_matrix(yranp)
+    tfidf=sparse.hstack([tfidf,yrasc])
     return tfidf,countMatrix
     
 def labelsToMultilabelF(lbl):
@@ -96,3 +141,9 @@ def evaluateMultilabelPrediction(pred_y,true_y):
     f1=metrics.f1_score(true_y,pred_y,average='micro')
     prec=metrics.precision_score(true_y,pred_y,average='micro')
     return acc,prec,rec,f1
+    
+    
+def confusionMatrix(pred_y,true_y,labels):
+    cnf=metrics.confusion_matrix(true_y,pred_y,labels)
+    return cnf
+    
